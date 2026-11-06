@@ -154,6 +154,10 @@ export function AnalysisPanel({
                   <td>
                     <button
                       className="date-button"
+                      onPointerDown={(event) => {
+                        // Keep the click on this button if the hover chart reflows on focus.
+                        if (event.button === 0) event.currentTarget.setPointerCapture(event.pointerId);
+                      }}
                       onFocus={() => onHover(c)}
                       onBlur={() => onHover(null)}
                       onClick={() => onSelect(c)}

@@ -384,6 +384,7 @@ dd > span {
   min-height: 32px;
 }
 .case-strip {
+  scroll-margin-top: 16px;
   display: grid;
   grid-template-columns: repeat(5, minmax(0, 1fr));
   gap: 8px;

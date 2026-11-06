@@ -460,3 +460,44 @@ test('zoom animates intermediate scales, cancels on period changes and respects 
   await chart.getByRole('button', { name: '차트 배율 초기화' }).click();
   await expect(chart).toHaveAttribute('data-count', '20');
 });
+
+test('selecting a similar case scrolls to the comparison charts instead of the page header', async ({ page }) => {
+  await page.goto('/');
+  await openAnalysis(page);
+  const strip = page.locator('.case-strip');
+  await expect(strip.locator('button')).toHaveCount(5);
+  const beforeHover = await page.evaluate(() => scrollY);
+  await strip.locator('button').first().hover();
+  expect(await page.evaluate(() => scrollY)).toBe(beforeHover);
+  await strip.locator('button').first().click();
+  await expect(page.getByTestId('chart')).toHaveCount(2);
+  async function expectAligned() {
+    await expect.poll(async () => strip.evaluate(node => {
+      const box = node.getBoundingClientRect();
+      const maximumScroll = document.documentElement.scrollHeight - innerHeight;
+      const expected = Math.min(maximumScroll, Math.max(0, box.top + scrollY - 16));
+      return Math.abs(scrollY - expected);
+    })).toBeLessThan(2);
+    expect(await page.evaluate(() => scrollY)).toBeGreaterThan(0);
+    expect((await page.locator('.split').boundingBox())!.y).toBeGreaterThan(0);
+  }
+  await expectAligned();
+  for (const volume of await page.locator('.split [data-zoom-plot="volume"]').all()) {
+    const box = (await volume.boundingBox())!;
+    expect(box.y + box.height).toBeLessThanOrEqual(page.viewportSize()!.height);
+  }
+  await page.screenshot({ path: 'test-results/comparison-scroll.png' });
+  await page.keyboard.press('Escape');
+  await page.locator('tbody .date-button').first().click();
+  await expect(page.getByTestId('chart')).toHaveCount(2);
+  await expectAligned();
+  await page.keyboard.press('Escape');
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await strip.locator('button').nth(1).focus();
+  await strip.locator('button').nth(1).press('Enter');
+  await expect(page.getByTestId('chart')).toHaveCount(2);
+  await expectAligned();
+  const firstChart = (await page.locator('.split').boundingBox())!;
+  expect(firstChart.y).toBeLessThan(150);
+});

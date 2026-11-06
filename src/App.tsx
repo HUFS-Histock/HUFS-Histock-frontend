@@ -42,6 +42,7 @@ export default function App() {
   const pickerButton = useRef<HTMLButtonElement>(null);
   const closePicker = useRef<HTMLButtonElement>(null);
   const content = useRef<HTMLElement>(null);
+  const caseStrip = useRef<HTMLDivElement>(null);
 
   function resetComparison(hideTop5 = true) {
     setSelected(null);
@@ -116,6 +117,12 @@ export default function App() {
   useEffect(() => {
     if (picker) closePicker.current?.focus();
   }, [picker]);
+  useEffect(() => {
+    if (selected) caseStrip.current?.scrollIntoView({
+      block: "start",
+      behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "instant" : "smooth",
+    });
+  }, [selected]);
 
   function useSnapshot() {
     if (!snapshot) return;
@@ -152,7 +159,6 @@ export default function App() {
     setHovered(null);
     setCompare(true);
     setTab("chart");
-    window.scrollTo({ top: 0, behavior: "smooth" });
   };
   const availablePeriods = [20, 60, 120].filter(
     (n) =>
@@ -444,7 +450,7 @@ export default function App() {
                       Top {result.cases.length}에 마우스를 올리면 겹쳐 보기 ·
                       클릭하면 좌우 비교
                     </div>
-                    <div className="case-strip">
+                    <div ref={caseStrip} className="case-strip">
                       {result.cases.map((c, i) => (
                         <button
                           key={c.date}
