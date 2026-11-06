@@ -1,0 +1,8 @@
+node_modules/
+dist/
+.env*
+!.env.example
+public/snapshot.json
+test-results/
+playwright-report/
+.DS_Store
