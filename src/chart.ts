@@ -30,23 +30,72 @@ export function windowFor(
     return null;
   return result;
 }
-export function geometry(count: number, width: number, single: boolean) {
+export function geometry(
+  count: number,
+  width: number,
+  single: boolean,
+  zoomed = false,
+) {
   const plotWidth = width - 94;
-  const centered = single && count === 20;
+  const centered = (single && count <= 20) || zoomed;
   return {
     x: (i: number) =>
       22 +
       (centered ? (i + 0.5) / count : count === 1 ? 0.5 : i / (count - 1)) *
         plotWidth,
     barWidth: centered
-      ? (plotWidth / count) * 0.7
+      ? (plotWidth / count) * (single ? 0.7 : 0.5)
       : Math.min(15, (plotWidth / count) * 0.5),
+  };
+}
+export function zoomRange(
+  total: number,
+  start: number,
+  count: number,
+  factor: number,
+  anchor = 0.5,
+) {
+  const rounded = Math.round(count * factor);
+  const requested = rounded === count ? count + Math.sign(factor - 1) : rounded;
+  const nextCount = Math.max(Math.min(5, total), Math.min(total, requested));
+  const fraction = Math.max(0, Math.min(1, anchor));
+  const point = start + fraction * (count - 1);
+  return {
+    start: Math.max(
+      0,
+      Math.min(total - nextCount, Math.round(point - fraction * (nextCount - 1))),
+    ),
+    count: nextCount,
   };
 }
 export function normalized(values: number[]): number[] {
   if (!values.length || !Number.isFinite(values[0]) || values[0] <= 0)
     throw new Error("비교할 가격 데이터가 없습니다.");
   return values.map((v) => (v / values[0]) * 100);
+}
+
+export function dateTicks(dates: string[], start: number, count: number) {
+  const week = (date: string) => {
+    const time = Date.parse(date);
+    const day = new Date(time).getUTCDay();
+    return time - ((day + 6) % 7) * 86400000;
+  };
+  const ticks: { index: number; text: string }[] = [];
+  dates.slice(start, start + count).forEach((date, index) => {
+    const previous = dates[start + index - 1];
+    const monthChanged = !previous || previous.slice(0, 7) !== date.slice(0, 7);
+    const month = Number(date.slice(5, 7));
+    const day = Number(date.slice(8));
+    if (count <= 15) {
+      ticks.push({ index, text: `${month}/${day}` });
+    } else if (count <= 40) {
+      // A Monday holiday is labeled at that week's first available trading day.
+      if (!previous || week(date) !== week(previous)) ticks.push({ index, text: `${month}/${day}` });
+    } else if (monthChanged) {
+      ticks.push({ index, text: `${month}월` });
+    }
+  });
+  return ticks;
 }
 export function movingAverage(
   values: number[],

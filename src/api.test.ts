@@ -8,12 +8,35 @@ import {
   request,
 } from "./api.ts";
 import {
+  dateTicks,
   geometry,
   movingAverage,
   normalized,
   percent,
   windowFor,
+  zoomRange,
 } from "./chart.ts";
+
+test("date ticks switch at 40/15 days and use the first session of each calendar week", () => {
+  const dates: string[] = [];
+  for (let day = Date.parse('2026-08-03'); dates.length < 65; day += 86400000) {
+    const date = new Date(day);
+    const text = date.toISOString().slice(0, 10);
+    if (date.getUTCDay() !== 0 && date.getUTCDay() !== 6 && text !== '2026-09-07') dates.push(text);
+  }
+  assert.deepEqual(dateTicks(dates, 0, 41).map(t => t.text), ['8월', '9월']);
+  const weekly = dateTicks(dates, 0, 40);
+  assert.ok(weekly.some(t => dates[t.index] === '2026-09-08'));
+  assert.ok(weekly.every(t => ['2026-09-08'].includes(dates[t.index]) || new Date(dates[t.index]).getUTCDay() === 1));
+  assert.ok(dateTicks(dates, 0, 16).length < 16);
+  assert.equal(dateTicks(dates, 0, 15).length, 15);
+  const start = dates.indexOf('2026-08-28');
+  assert.deepEqual(dateTicks(dates, start, 5).map(t => t.text), ['8/28', '8/31', '9/1', '9/2', '9/3']);
+  const midweek = dates.indexOf('2026-09-09');
+  assert.equal(dates[midweek + dateTicks(dates, midweek, 20)[0].index], '2026-09-14');
+  const year = ['2026-12-31', '2027-01-04', '2027-01-05'];
+  assert.deepEqual(dateTicks(year, 0, 41).map(t => t.text), ['12월', '1월']);
+});
 
 const outcome = {
   fwd_return_20d: 0.05,
@@ -180,4 +203,23 @@ test("invalid OHLC and snapshot date mismatch are rejected", () => {
   assert.throws(() => parseSnapshot({ ...valid, dataDate: "2026-11-03" }));
   valid.prices[0].high = 5;
   assert.throws(() => parseSnapshot(valid));
+});
+
+test("zoom keeps the pointed date, clamps bounds and fits candle bodies inside the plot", () => {
+  assert.equal(zoomRange(20, 7, 5, 1.01).count, 6);
+  for (const total of [3, 20, 60, 120]) {
+    for (const anchor of [0, .25, .5, 1]) {
+      const view = zoomRange(total, 0, total, .8, anchor);
+      assert.ok(Math.abs(view.start + anchor * (view.count - 1) - anchor * (total - 1)) <= .5);
+      assert.deepEqual(zoomRange(total, view.start, view.count, 100, anchor), { start: 0, count: total });
+      const smallest = zoomRange(total, view.start, view.count, .001, anchor);
+      assert.equal(smallest.count, Math.min(5, total));
+      assert.ok(smallest.start >= 0 && smallest.start + smallest.count <= total);
+      for (const single of [true, false]) {
+        const g = geometry(smallest.count, 650, single, true);
+        assert.ok(g.x(0) - g.barWidth / 2 >= 22);
+        assert.ok(g.x(smallest.count - 1) + g.barWidth / 2 <= 578);
+      }
+    }
+  }
 });

@@ -357,14 +357,31 @@ dd > span {
   font-size: 11px;
   padding: 7px 10px;
 }
-.zoom-controls {
+.chart-zoom-controls {
   display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  justify-content: flex-end;
   gap: 5px;
-  margin-left: auto;
+  margin-top: 8px;
 }
-.zoom-controls button {
-  font-size: 15px;
-  padding: 4px 10px;
+.chart[data-zoomed="true"] svg[data-zoom-plot] {
+  cursor: grab;
+  touch-action: pan-y;
+  user-select: none;
+}
+.chart[data-zoomed="true"] svg[data-zoom-plot]:active {
+  cursor: grabbing;
+}
+.chart-zoom-controls span {
+  margin-right: auto;
+  color: var(--muted);
+  font-size: 11px;
+}
+.chart-zoom-controls button {
+  font-size: 12px;
+  padding: 6px 10px;
+  min-height: 32px;
 }
 .case-strip {
   display: grid;
@@ -942,9 +959,8 @@ footer {
   .range-controls b {
     font-size: 10px;
   }
-  .zoom-controls button {
-    padding: 2px 6px;
-    font-size: 16px;
+  .chart-zoom-controls span {
+    flex-basis: 100%;
   }
   .indicator-picker {
     right: 0;

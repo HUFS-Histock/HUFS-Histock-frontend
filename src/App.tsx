@@ -32,6 +32,7 @@ export default function App() {
   ]);
   const [draft, setDraft] = useState<Indicator[]>(enabled);
   const [chartType, setChartType] = useState<"candle" | "line">("candle");
+  const [chartReset, setChartReset] = useState(0);
   const [period, setPeriod] = useState(120),
     [compare, setCompare] = useState(false);
   const [hovered, setHovered] = useState<Case | null>(null),
@@ -419,6 +420,7 @@ export default function App() {
                           setEnabled(draft);
                           setShowAI(true);
                           setPeriod(20);
+                          setChartReset((value) => value + 1);
                           setCompare(true);
                           setSelected(null);
                           setHovered(null);
@@ -510,6 +512,7 @@ export default function App() {
                 ) : (
                   <>
                     <Chart
+                      resetKey={chartReset}
                       candles={usableCandles}
                       history={
                         snapshot && displayDate
@@ -544,6 +547,7 @@ export default function App() {
                           disabled={!availablePeriods.includes(n)}
                           onClick={() => {
                             setPeriod(n);
+                            setChartReset((value) => value + 1);
                             setCompare(false);
                             setHovered(null);
                           }}
@@ -551,42 +555,6 @@ export default function App() {
                           {n}거래일
                         </button>
                       ))}
-                      <span className="zoom-controls">
-                        <button
-                          aria-label="차트 확대"
-                          disabled={
-                            activePeriod === 20 ||
-                            Boolean(compare || hovered) ||
-                            availablePeriods.length < 2
-                          }
-                          onClick={() =>
-                            setPeriod(
-                              availablePeriods[
-                                availablePeriods.indexOf(activePeriod) - 1
-                              ],
-                            )
-                          }
-                        >
-                          ＋
-                        </button>
-                        <button
-                          aria-label="차트 축소"
-                          disabled={
-                            activePeriod === availablePeriods.at(-1) ||
-                            Boolean(compare || hovered) ||
-                            availablePeriods.length < 2
-                          }
-                          onClick={() =>
-                            setPeriod(
-                              availablePeriods[
-                                availablePeriods.indexOf(activePeriod) + 1
-                              ],
-                            )
-                          }
-                        >
-                          −
-                        </button>
-                      </span>
                     </div>
                   </>
                 )}
@@ -722,6 +690,7 @@ export default function App() {
                           result={result}
                           enabled={enabled}
                           onCompare={() => {
+                            setChartReset((value) => value + 1);
                             setCompare(true);
                             setHovered(null);
                             window.scrollTo({ top: 0, behavior: "smooth" });
