@@ -102,10 +102,17 @@ button.text-button {
   border-bottom: 1px solid var(--line);
 }
 .brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
   text-decoration: none;
   font-size: 25px;
   font-weight: 800;
   letter-spacing: -0.7px;
+}
+.brand svg {
+  display: block;
+  flex: none;
 }
 .instrument-search {
   background: #f5f6f8;
@@ -477,13 +484,23 @@ dd > span {
   background: #f6f7f9;
 }
 .pill {
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
   font-size: 10px;
   background: #eaf9f1;
   border: 1px solid #72d9a1;
   padding: 5px;
   color: #00964b;
   border-radius: 4px;
+}
+.pill::before {
+  content: "";
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--green);
+  box-shadow: 0 0 0 2.5px rgba(0, 184, 90, 0.18);
 }
 .indicator-picker h3 {
   font-size: 12px;
@@ -526,8 +543,19 @@ dd > span {
   font-size: 14px;
 }
 .analysis-heading h2 > span {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
   color: var(--green);
   margin-right: 14px;
+}
+.analysis-heading h2 > span::before {
+  content: "";
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--green);
+  box-shadow: 0 0 0 3px rgba(0, 184, 90, 0.16);
 }
 .analysis-form {
   display: flex;
