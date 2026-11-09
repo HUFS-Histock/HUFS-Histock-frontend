@@ -11,6 +11,7 @@ import { percent, price, tone, windowFor } from "./chart";
 import { Chart } from "./components/Chart";
 import { AnalysisPanel, indicators } from "./components/AnalysisPanel";
 import type { Indicator } from "./components/AnalysisPanel";
+import { Logo } from "./components/Logo";
 
 export default function App() {
   const [snapshot, setSnapshot] = useState<Snapshot | null>(null);
@@ -175,7 +176,8 @@ export default function App() {
     <>
       <header className="site-header">
         <a href="/" className="brand">
-          HISTOCK
+          <Logo size={40} />
+          <span>HISTOCK</span>
         </a>
         <div className="instrument-search">
           ⌕ <span>SPY · SPDR S&P 500</span>

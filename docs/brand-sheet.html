@@ -1,0 +1,426 @@
+<title>Histock 로고</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;700;800;900&family=IBM+Plex+Mono:wght@400;600&family=Noto+Sans+KR:wght@400;500;700&display=swap">
+<style>
+  /* 토큰: 잉크/페이퍼는 테마를 따르고, 브랜드 표면(스테이지·마크 색)은 양 테마 동일 */
+  :root {
+    --bg: #eef1f6;
+    --surface: #ffffff;
+    --ink: #131a24;
+    --muted: #66707f;
+    --line: #dfe5ee;
+    --accent: #00b85a;
+    --purple: #9254de;
+    --stage: #0e141d;
+    --stage-ink: #dbe4f2;
+    --tile-a: #243043;
+    --tile-b: #0a0e15;
+    --past-a: #a88ef7;
+    --past-b: #6638d2;
+    --now-a: #45e790;
+    --now-b: #009b4f;
+    --node: #2ee383;
+    --cross: #e9eef7;
+    --display: "Archivo", "Noto Sans KR", sans-serif;
+    --body: "Noto Sans KR", "Apple SD Gothic Neo", sans-serif;
+    --mono: "IBM Plex Mono", "SFMono-Regular", monospace;
+    color-scheme: light;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #0c1017;
+      --surface: #121924;
+      --ink: #e6ecf6;
+      --muted: #8b95a7;
+      --line: #232c3a;
+      --accent: #2ee383;
+      color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #0c1017;
+    --surface: #121924;
+    --ink: #e6ecf6;
+    --muted: #8b95a7;
+    --line: #232c3a;
+    --accent: #2ee383;
+    color-scheme: dark;
+  }
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: var(--body);
+    font-size: 15px;
+    line-height: 1.7;
+    padding-left: max(16px, env(safe-area-inset-left, 0px));
+    padding-right: max(16px, env(safe-area-inset-right, 0px));
+  }
+  .sheet { max-width: 1040px; margin: 0 auto; padding-block: 34px 72px; }
+  .topbar { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 26px; }
+  .topbar .id { display: flex; align-items: center; gap: 12px; font-family: var(--display); font-weight: 800; letter-spacing: -0.02em; font-size: 17px; }
+  .topbar .id small { display: block; font-family: var(--mono); font-weight: 400; font-size: 10.5px; color: var(--muted); letter-spacing: 0.08em; }
+  .toggle {
+    border: 1px solid var(--line); background: var(--surface); color: var(--ink);
+    border-radius: 999px; padding: 7px 14px; font: 500 12.5px var(--body); cursor: pointer;
+  }
+  .toggle:hover { border-color: var(--accent); }
+
+  .stage {
+    background: linear-gradient(135deg, #1a2334 0%, var(--stage) 72%);
+    border-radius: 22px; padding: clamp(28px, 5vw, 56px); color: var(--stage-ink);
+    display: flex; align-items: center; gap: clamp(28px, 5vw, 64px); flex-wrap: wrap;
+    border: 1px solid rgba(255, 255, 255, 0.06);
+  }
+  .stage .mark-wrap { position: relative; flex: none; }
+  .stage h1 { font-family: var(--display); font-weight: 900; font-size: clamp(30px, 5vw, 46px); letter-spacing: -0.03em; margin: 0 0 10px; color: #fff; }
+  .stage .kicker { font-family: var(--mono); font-size: 11.5px; letter-spacing: 0.22em; color: #7fe8ae; margin-bottom: 14px; }
+  .stage p { margin: 0; max-width: 46ch; color: #a9b6cb; font-size: 15.5px; }
+  .stage .tagline { margin-top: 16px; font-weight: 700; color: #e6ecf6; }
+  .guides-toggle { margin-top: 22px; }
+
+  section { margin-top: 56px; }
+  .eyebrow { font-family: var(--mono); font-size: 11px; letter-spacing: 0.2em; color: var(--accent); text-transform: uppercase; }
+  h2 { font-family: var(--display); font-weight: 800; letter-spacing: -0.02em; font-size: 24px; margin: 6px 0 6px; }
+  .lede { color: var(--muted); margin: 0 0 24px; max-width: 62ch; }
+
+  .grid { display: grid; gap: 14px; }
+  .parts { grid-template-columns: repeat(auto-fit, minmax(215px, 1fr)); }
+  .part { background: var(--surface); border: 1px solid var(--line); border-radius: 16px; padding: 20px; min-width: 0; }
+  .part .frag { height: 118px; display: flex; align-items: center; justify-content: center; margin-bottom: 12px; }
+  .part h3 { margin: 0 0 4px; font-size: 15px; }
+  .part .role { font-family: var(--mono); font-size: 10.5px; color: var(--muted); letter-spacing: 0.06em; margin-bottom: 8px; }
+  .part p { margin: 0; font-size: 13px; color: var(--muted); }
+
+  .swatches { grid-template-columns: repeat(auto-fit, minmax(185px, 1fr)); }
+  .swatch { background: var(--surface); border: 1px solid var(--line); border-radius: 16px; overflow: hidden; cursor: pointer; text-align: left; padding: 0; font: inherit; color: inherit; }
+  .swatch:hover { border-color: var(--accent); }
+  .swatch .chip { height: 86px; }
+  .swatch .meta { padding: 12px 14px 14px; }
+  .swatch b { display: block; font-size: 13.5px; }
+  .swatch code { font-family: var(--mono); font-size: 11px; color: var(--muted); display: block; margin-top: 2px; }
+  .swatch .copied { color: var(--accent); opacity: 0; transition: opacity 0.15s; }
+  .swatch.copied .copied { opacity: 1; }
+
+  .sizes { display: flex; align-items: flex-end; gap: clamp(18px, 4vw, 44px); flex-wrap: wrap; background: var(--surface); border: 1px solid var(--line); border-radius: 16px; padding: 28px clamp(18px, 3vw, 36px); }
+  .size { text-align: center; min-width: 0; }
+  .size .box { display: flex; align-items: flex-end; justify-content: center; height: 132px; }
+  .size small { font-family: var(--mono); font-size: 10.5px; color: var(--muted); display: block; margin-top: 10px; }
+
+  .applies { grid-template-columns: repeat(auto-fit, minmax(290px, 1fr)); }
+  .apply { background: var(--surface); border: 1px solid var(--line); border-radius: 16px; padding: 18px; min-width: 0; }
+  .apply h3 { margin: 0 0 12px; font-size: 14px; }
+  .app-header { background: #fff; border: 1px solid #e4e8ef; border-radius: 10px; padding: 14px 16px; display: flex; align-items: center; gap: 12px; }
+  .app-header .word { font-family: Arial, var(--body); font-weight: 800; font-size: 22px; letter-spacing: -0.7px; color: #191c21; }
+  .app-header .search { background: #f5f6f8; color: #89909b; border-radius: 20px; padding: 9px 14px; font-size: 11.5px; margin-left: auto; }
+  .tabbar { background: #dee3ea; border-radius: 10px 10px 0 0; padding: 8px 10px 0; display: flex; }
+  .tab { background: #fff; border-radius: 8px 8px 0 0; padding: 7px 14px 8px; display: flex; align-items: center; gap: 8px; font-size: 11.5px; color: #333c48; max-width: 100%; }
+  .tab span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .tabpage { background: #fff; border-radius: 0 0 10px 10px; height: 74px; }
+  .ogcard { background: linear-gradient(135deg, #26334a 0%, #0a0e15 64%); border-radius: 12px; padding: 26px; display: flex; align-items: center; gap: 26px; flex-wrap: wrap; }
+  .ogcard .word { font-family: var(--display); font-weight: 800; color: #fff; font-size: clamp(30px, 6vw, 52px); letter-spacing: -0.028em; line-height: 1; }
+  .ogcard .sub { color: #a9b6cb; font-weight: 600; margin-top: 10px; font-size: clamp(13px, 2.4vw, 19px); letter-spacing: -0.02em; }
+  .ogcard .chip2 { margin-top: 18px; display: inline-flex; align-items: center; gap: 8px; font-family: var(--mono); font-size: 10px; letter-spacing: 0.16em; color: #7fe8ae; }
+  .chip2 i { width: 7px; height: 7px; border-radius: 50%; background: var(--node); box-shadow: 0 0 0 3px rgba(46, 227, 131, 0.22); }
+  .pillrow { display: flex; flex-direction: column; gap: 10px; }
+  .aipill { display: inline-flex; align-items: center; gap: 6px; font-size: 10px; background: #eaf9f1; border: 1px solid #72d9a1; padding: 5px 7px; color: #00964b; border-radius: 4px; width: fit-content; }
+  .aipill::before, .aiheading::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: #00b85a; box-shadow: 0 0 0 3px rgba(0, 184, 90, 0.16); }
+  .aipill::before { width: 6px; height: 6px; box-shadow: 0 0 0 2.5px rgba(0, 184, 90, 0.18); }
+  .aiheading { display: inline-flex; align-items: center; gap: 7px; color: #008c46; font-weight: 700; font-size: 14px; }
+
+  .files { border: 1px solid var(--line); border-radius: 16px; overflow: hidden; }
+  .files table { width: 100%; border-collapse: collapse; }
+  .files th { text-align: left; font-family: var(--mono); font-size: 10.5px; letter-spacing: 0.12em; color: var(--muted); padding: 12px 16px; border-bottom: 1px solid var(--line); text-transform: uppercase; }
+  .files td { padding: 11px 16px; border-bottom: 1px solid var(--line); font-size: 13px; vertical-align: top; }
+  .files tr:last-child td { border-bottom: 0; }
+  .files code { font-family: var(--mono); font-size: 12px; color: var(--ink); white-space: nowrap; }
+  .files td:nth-child(2) { color: var(--muted); }
+  .files-wrap { overflow-x: auto; }
+
+  .foot { margin-top: 60px; color: var(--muted); font-size: 12px; font-family: var(--mono); display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+
+  .guides { opacity: 0; transition: opacity 0.2s; pointer-events: none; }
+  .mark-wrap.show .guides { opacity: 1; }
+  @media (prefers-reduced-motion: reduce) {
+    .guides, .swatch .copied { transition: none; }
+  }
+</style>
+
+<!-- 공유 그라디언트 정의 (문서 전체 인스턴스가 참조) -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <linearGradient id="hs-tile" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#243043"/><stop offset="1" stop-color="#0a0e15"/>
+    </linearGradient>
+    <linearGradient id="hs-past" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#a88ef7"/><stop offset="1" stop-color="#6638d2"/>
+    </linearGradient>
+    <linearGradient id="hs-now" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#45e790"/><stop offset="1" stop-color="#009b4f"/>
+    </linearGradient>
+    <radialGradient id="hs-glow" cx="0.5" cy="0.5" r="0.5">
+      <stop offset="0" stop-color="#2ee383" stop-opacity="0.3"/><stop offset="1" stop-color="#2ee383" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+</svg>
+
+<div class="sheet">
+  <div class="topbar">
+    <div class="id">
+      <svg width="34" height="34" viewBox="0 0 512 512" aria-hidden="true">
+        <rect width="512" height="512" rx="116" fill="url(#hs-tile)"/>
+        <circle cx="256" cy="256" r="38" fill="url(#hs-glow)"/>
+        <line x1="194" y1="256" x2="222" y2="256" stroke="#9d88f0" stroke-width="17" stroke-linecap="round"/>
+        <line x1="290" y1="256" x2="318" y2="256" stroke="#e9eef7" stroke-width="17" stroke-linecap="round"/>
+        <line x1="176" y1="120" x2="176" y2="386" stroke="#7b57e0" stroke-width="13" stroke-linecap="round"/>
+        <rect x="150" y="144" width="52" height="224" rx="26" fill="url(#hs-past)"/>
+        <rect x="310" y="144" width="52" height="224" rx="26" fill="url(#hs-now)"/>
+        <circle cx="256" cy="256" r="21" fill="#ffffff"/><circle cx="256" cy="256" r="13" fill="#2ee383"/>
+      </svg>
+      <span>HISTOCK<small>BRAND / LOGO SHEET</small></span>
+    </div>
+    <button class="toggle" id="themeToggle" type="button">테마 바꾸기</button>
+  </div>
+
+  <div class="stage">
+    <div class="mark-wrap" id="heroMark">
+      <svg width="212" height="212" viewBox="0 0 512 512" role="img" aria-label="HISTOCK 로고 마크">
+        <rect width="512" height="512" rx="116" fill="url(#hs-tile)"/>
+        <circle cx="170" cy="140" r="300" fill="#ffffff" opacity="0.04"/>
+        <circle cx="256" cy="256" r="38" fill="url(#hs-glow)"/>
+        <line x1="194" y1="256" x2="222" y2="256" stroke="#9d88f0" stroke-width="17" stroke-linecap="round"/>
+        <line x1="290" y1="256" x2="318" y2="256" stroke="#e9eef7" stroke-width="17" stroke-linecap="round"/>
+        <line x1="176" y1="120" x2="176" y2="386" stroke="#7b57e0" stroke-width="13" stroke-linecap="round"/>
+        <rect x="150" y="144" width="52" height="224" rx="26" fill="url(#hs-past)"/>
+        <rect x="310" y="144" width="52" height="224" rx="26" fill="url(#hs-now)"/>
+        <circle cx="256" cy="256" r="21" fill="#ffffff"/><circle cx="256" cy="256" r="13" fill="#2ee383"/>
+        <g class="guides" fill="none" stroke="#6fcfa2" stroke-width="2" stroke-dasharray="7 7">
+          <line x1="0" y1="256" x2="512" y2="256"/>
+          <line x1="256" y1="0" x2="256" y2="512"/>
+          <rect x="150" y="144" width="212" height="224"/>
+          <circle cx="256" cy="256" r="21"/>
+          <g fill="#6fcfa2" stroke="none" font-family="IBM Plex Mono, monospace" font-size="17">
+            <text x="270" y="34">256,256</text>
+            <text x="150" y="132">H · 212×224</text>
+            <text x="290" y="300">Ø42 노드</text>
+            <text x="34" y="472">rx 116</text>
+          </g>
+        </g>
+      </svg>
+    </div>
+    <div>
+      <div class="kicker">HISTORY × STOCK</div>
+      <h1>과거와 현재가 만나는 H</h1>
+      <p>
+        마크는 히스톡의 핵심 동작 — "과거의 비슷한 시장을 찾아 오늘과 겹쳐 보기" — 을
+        그대로 문자 H에 옮겼어요. 왼쪽 기둥은 심지가 달린 과거 캔들, 오른쪽은 지금의
+        봉. 가로 횡단선은 과거(점선)에서 매치 노드를 지나 현재(실선)로 이어집니다.
+      </p>
+      <p class="tagline">과거의 시장에서, 투자의 힌트를 찾다</p>
+      <button class="toggle guides-toggle" id="guidesToggle" type="button" aria-pressed="false">구조 보기</button>
+    </div>
+  </div>
+
+  <section>
+    <div class="eyebrow">01 · 구성</div>
+    <h2>세 개의 조각이 하나의 이야기</h2>
+    <p class="lede">앱 화면에서 이미 쓰던 의미 색을 그대로 가져왔어요 — 과거는 보라, 현재는 그린. 로고가 화면 언어와 같은 말을 하게요.</p>
+    <div class="grid parts">
+      <div class="part">
+        <div class="frag">
+          <svg width="52" height="212" viewBox="124 96 104 320" aria-hidden="true">
+            <line x1="176" y1="120" x2="176" y2="386" stroke="#7b57e0" stroke-width="13" stroke-linecap="round"/>
+            <rect x="150" y="144" width="52" height="224" rx="26" fill="url(#hs-past)"/>
+          </svg>
+        </div>
+        <h3>과거 캔들</h3>
+        <div class="role">PAST · #6638D2 → #A88EF7</div>
+        <p>위아래 심지까지 갖춘 캔들. 차트의 과거 구간(보라) 그대로예요.</p>
+      </div>
+      <div class="part">
+        <div class="frag">
+          <svg width="130" height="130" viewBox="191 191 130 130" aria-hidden="true">
+            <circle cx="256" cy="256" r="56" fill="url(#hs-glow)"/>
+            <circle cx="256" cy="256" r="32" fill="#ffffff"/><circle cx="256" cy="256" r="20" fill="#2ee383"/>
+          </svg>
+        </div>
+        <h3>매치 노드</h3>
+        <div class="role">MATCH · #2EE383</div>
+        <p>유사 구간을 찾아낸 지점. Top 5의 첫 신호가 시작되는 곳이에요.</p>
+      </div>
+      <div class="part">
+        <div class="frag">
+          <svg width="52" height="212" viewBox="284 96 104 320" aria-hidden="true">
+            <rect x="310" y="144" width="52" height="224" rx="26" fill="url(#hs-now)"/>
+          </svg>
+        </div>
+        <h3>현재 봉</h3>
+        <div class="role">NOW · #009B4F → #45E790</div>
+        <p>심지가 없는 막대 — 아직 진행 중인 오늘. 브랜드 그린이 기준색이에요.</p>
+      </div>
+      <div class="part">
+        <div class="frag">
+          <svg width="150" height="150" viewBox="130 108 252 296" aria-hidden="true">
+            <line x1="194" y1="256" x2="222" y2="256" stroke="#9d88f0" stroke-width="17" stroke-linecap="round"/>
+            <circle cx="256" cy="256" r="21" fill="#ffffff"/><circle cx="256" cy="256" r="13" fill="#2ee383"/>
+            <line x1="290" y1="256" x2="318" y2="256" stroke="#e9eef7" stroke-width="17" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <h3>횡단선</h3>
+        <div class="role">LINK · 점선 → 노드 → 실선</div>
+        <p>과거에서 온 흐름이 노드를 지나 현재로 이어지는 유사도 연결.</p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="eyebrow">02 · 색</div>
+    <h2>팔레트</h2>
+    <p class="lede">카드를 누르면 헥스 코드를 복사해요. 잉크 타일의 그라데이션은 135°로 고정하고, 과거·현재 축은 세로 방향이에요.</p>
+    <div class="grid swatches" id="swatches">
+      <button class="swatch" type="button" data-hex="#243043 → #0A0E15">
+        <div class="chip" style="background: linear-gradient(135deg, #243043, #0a0e15); border-bottom: 1px solid var(--line);"></div>
+        <div class="meta"><b>잉크 타일</b><code>#243043 → #0A0E15 <span class="copied">복사됨</span></code></div>
+      </button>
+      <button class="swatch" type="button" data-hex="#A88EF7 → #6638D2">
+        <div class="chip" style="background: linear-gradient(180deg, #a88ef7, #6638d2);"></div>
+        <div class="meta"><b>히스토리 퍼플</b><code>#A88EF7 → #6638D2 <span class="copied">복사됨</span></code></div>
+      </button>
+      <button class="swatch" type="button" data-hex="#45E790 → #009B4F">
+        <div class="chip" style="background: linear-gradient(180deg, #45e790, #009b4f);"></div>
+        <div class="meta"><b>라이브 그린</b><code>#45E790 → #009B4F <span class="copied">복사됨</span></code></div>
+      </button>
+      <button class="swatch" type="button" data-hex="#2EE383">
+        <div class="chip" style="background: #2ee383;"></div>
+        <div class="meta"><b>매치 노드</b><code>#2EE383 <span class="copied">복사됨</span></code></div>
+      </button>
+      <button class="swatch" type="button" data-hex="#E9EEF7">
+        <div class="chip" style="background: #e9eef7; border-bottom: 1px solid var(--line);"></div>
+        <div class="meta"><b>횡단 화이트</b><code>#E9EEF7 <span class="copied">복사됨</span></code></div>
+      </button>
+    </div>
+  </section>
+
+  <section>
+    <div class="eyebrow">03 · 크기</div>
+    <h2>작아질수록 단순하게</h2>
+    <p class="lede">96px 아래로 내려가면 심지와 노드가 사라지는 파비콘 변형으로 전환해요. 어떤 크기에서도 H 실루엣이 먼저 보입니다.</p>
+    <div class="sizes">
+      <div class="size"><div class="box">
+        <svg width="128" height="128" viewBox="0 0 512 512" aria-hidden="true"><rect width="512" height="512" rx="116" fill="url(#hs-tile)"/><circle cx="256" cy="256" r="38" fill="url(#hs-glow)"/><line x1="194" y1="256" x2="222" y2="256" stroke="#9d88f0" stroke-width="17" stroke-linecap="round"/><line x1="290" y1="256" x2="318" y2="256" stroke="#e9eef7" stroke-width="17" stroke-linecap="round"/><line x1="176" y1="120" x2="176" y2="386" stroke="#7b57e0" stroke-width="13" stroke-linecap="round"/><rect x="150" y="144" width="52" height="224" rx="26" fill="url(#hs-past)"/><rect x="310" y="144" width="52" height="224" rx="26" fill="url(#hs-now)"/><circle cx="256" cy="256" r="21" fill="#ffffff"/><circle cx="256" cy="256" r="13" fill="#2ee383"/></svg>
+      </div><small>128 · 마크</small></div>
+      <div class="size"><div class="box">
+        <svg width="64" height="64" viewBox="0 0 512 512" aria-hidden="true"><rect width="512" height="512" rx="116" fill="url(#hs-tile)"/><circle cx="256" cy="256" r="38" fill="url(#hs-glow)"/><line x1="194" y1="256" x2="222" y2="256" stroke="#9d88f0" stroke-width="17" stroke-linecap="round"/><line x1="290" y1="256" x2="318" y2="256" stroke="#e9eef7" stroke-width="17" stroke-linecap="round"/><line x1="176" y1="120" x2="176" y2="386" stroke="#7b57e0" stroke-width="13" stroke-linecap="round"/><rect x="150" y="144" width="52" height="224" rx="26" fill="url(#hs-past)"/><rect x="310" y="144" width="52" height="224" rx="26" fill="url(#hs-now)"/><circle cx="256" cy="256" r="21" fill="#ffffff"/><circle cx="256" cy="256" r="13" fill="#2ee383"/></svg>
+      </div><small>64 · 마크</small></div>
+      <div class="size"><div class="box">
+        <svg width="40" height="40" viewBox="0 0 512 512" aria-hidden="true"><rect width="512" height="512" rx="110" fill="url(#hs-tile)"/><line x1="176" y1="256" x2="336" y2="256" stroke="#e9eef7" stroke-width="44" stroke-linecap="round"/><rect x="138" y="128" width="76" height="256" rx="38" fill="url(#hs-past)"/><rect x="298" y="128" width="76" height="256" rx="38" fill="url(#hs-now)"/></svg>
+      </div><small>40 · 파비콘 변형</small></div>
+      <div class="size"><div class="box">
+        <svg width="32" height="32" viewBox="0 0 512 512" aria-hidden="true"><rect width="512" height="512" rx="110" fill="url(#hs-tile)"/><line x1="176" y1="256" x2="336" y2="256" stroke="#e9eef7" stroke-width="44" stroke-linecap="round"/><rect x="138" y="128" width="76" height="256" rx="38" fill="url(#hs-past)"/><rect x="298" y="128" width="76" height="256" rx="38" fill="url(#hs-now)"/></svg>
+      </div><small>32 · 파비콘</small></div>
+      <div class="size"><div class="box">
+        <svg width="16" height="16" viewBox="0 0 512 512" aria-hidden="true"><rect width="512" height="512" rx="110" fill="url(#hs-tile)"/><line x1="176" y1="256" x2="336" y2="256" stroke="#e9eef7" stroke-width="44" stroke-linecap="round"/><rect x="138" y="128" width="76" height="256" rx="38" fill="url(#hs-past)"/><rect x="298" y="128" width="76" height="256" rx="38" fill="url(#hs-now)"/></svg>
+      </div><small>16 · 파비콘</small></div>
+    </div>
+  </section>
+
+  <section>
+    <div class="eyebrow">04 · 적용</div>
+    <h2>화면 속의 로고</h2>
+    <p class="lede">앱 헤더는 마크 40px + 800 웨이트 워드마크. 소셜 카드와 AI 라벨의 그린 도트는 매치 노드의 확장이에요.</p>
+    <div class="grid applies">
+      <div class="apply">
+        <h3>앱 헤더 잠금업</h3>
+        <div class="app-header">
+          <svg width="40" height="40" viewBox="0 0 512 512" aria-hidden="true"><rect width="512" height="512" rx="116" fill="url(#hs-tile)"/><circle cx="256" cy="256" r="38" fill="url(#hs-glow)"/><line x1="194" y1="256" x2="222" y2="256" stroke="#9d88f0" stroke-width="17" stroke-linecap="round"/><line x1="290" y1="256" x2="318" y2="256" stroke="#e9eef7" stroke-width="17" stroke-linecap="round"/><line x1="176" y1="120" x2="176" y2="386" stroke="#7b57e0" stroke-width="13" stroke-linecap="round"/><rect x="150" y="144" width="52" height="224" rx="26" fill="url(#hs-past)"/><rect x="310" y="144" width="52" height="224" rx="26" fill="url(#hs-now)"/><circle cx="256" cy="256" r="21" fill="#ffffff"/><circle cx="256" cy="256" r="13" fill="#2ee383"/></svg>
+          <span class="word">HISTOCK</span>
+          <span class="search">⌕ SPY · SPDR S&P 500</span>
+        </div>
+      </div>
+      <div class="apply">
+        <h3>브라우저 탭</h3>
+        <div>
+          <div class="tabbar">
+            <div class="tab">
+              <svg width="16" height="16" viewBox="0 0 512 512" aria-hidden="true"><rect width="512" height="512" rx="110" fill="url(#hs-tile)"/><line x1="176" y1="256" x2="336" y2="256" stroke="#e9eef7" stroke-width="44" stroke-linecap="round"/><rect x="138" y="128" width="76" height="256" rx="38" fill="url(#hs-past)"/><rect x="298" y="128" width="76" height="256" rx="38" fill="url(#hs-now)"/></svg>
+              <span>HISTOCK · SPY 차트와 AI 보조지표</span>
+            </div>
+          </div>
+          <div class="tabpage"></div>
+        </div>
+      </div>
+      <div class="apply">
+        <h3>AI 라벨 도트</h3>
+        <div class="pillrow">
+          <span class="aipill">HISTOCK AI</span>
+          <span class="aiheading">HISTOCK AI 보조지표</span>
+          <span style="font-size:12px;color:var(--muted)">보조지표 피커와 분석 제목의 그린 도트는 매치 노드와 같은 색, 같은 용도예요.</span>
+        </div>
+      </div>
+      <div class="apply" style="grid-column: 1 / -1;">
+        <h3>소셜 카드 (1200×630)</h3>
+        <div class="ogcard">
+          <svg width="150" height="150" viewBox="0 0 512 512" aria-hidden="true"><rect width="512" height="512" rx="116" fill="url(#hs-tile)"/><circle cx="256" cy="256" r="38" fill="url(#hs-glow)"/><line x1="194" y1="256" x2="222" y2="256" stroke="#9d88f0" stroke-width="17" stroke-linecap="round"/><line x1="290" y1="256" x2="318" y2="256" stroke="#e9eef7" stroke-width="17" stroke-linecap="round"/><line x1="176" y1="120" x2="176" y2="386" stroke="#7b57e0" stroke-width="13" stroke-linecap="round"/><rect x="150" y="144" width="52" height="224" rx="26" fill="url(#hs-past)"/><rect x="310" y="144" width="52" height="224" rx="26" fill="url(#hs-now)"/><circle cx="256" cy="256" r="21" fill="#ffffff"/><circle cx="256" cy="256" r="13" fill="#2ee383"/></svg>
+          <div style="min-width: 0;">
+            <div class="word">HISTOCK</div>
+            <div class="sub">과거의 시장에서, 투자의 힌트를 찾다</div>
+            <div class="chip2"><i></i>SPY · AI MARKET ANALOGS</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="eyebrow">05 · 파일</div>
+    <h2>레포지토리 에셋</h2>
+    <p class="lede">SVG는 원본, PNG는 <code style="font-family:var(--mono);font-size:12px">node scripts/render-logo-assets.mjs</code> 로 다시 그릴 수 있어요. 마크를 고치면 스크립트가 전체 에셋을 일괄 재생성합니다.</p>
+    <div class="files-wrap"><div class="files">
+      <table>
+        <thead><tr><th>파일</th><th>용도</th></tr></thead>
+        <tbody>
+          <tr><td><code>public/logo-mark.svg</code></td><td>마크 원본 (512, 그라디언트·심지·노드 포함)</td></tr>
+          <tr><td><code>public/favicon.svg</code></td><td>파비콘 변형 — 굵은 횡단선, 심지·노드 생략</td></tr>
+          <tr><td><code>public/favicon-32.png</code></td><td>구형 브라우저용 PNG 파비콘</td></tr>
+          <tr><td><code>public/apple-touch-icon.png</code></td><td>iOS 홈 스크린 아이콘 (180)</td></tr>
+          <tr><td><code>public/icon-192.png · icon-512.png</code></td><td>PWA 아이콘</td></tr>
+          <tr><td><code>public/og-image.png</code></td><td>소셜 공유 카드 (1200×630)</td></tr>
+          <tr><td><code>src/components/Logo.tsx</code></td><td>헤더용 인라인 컴포넌트 (크기 prop)</td></tr>
+          <tr><td><code>scripts/render-logo-assets.mjs</code></td><td>PNG 재생성 스크립트</td></tr>
+        </tbody>
+      </table>
+    </div></div>
+  </section>
+
+  <div class="foot">
+    <span>HISTOCK · 과거의 시장에서, 투자의 힌트를 찾다</span>
+    <span>BRAND SHEET · 2026-11</span>
+  </div>
+</div>
+
+<script>
+  (function () {
+    var root = document.documentElement;
+    var toggle = document.getElementById("themeToggle");
+    toggle.addEventListener("click", function () {
+      root.dataset.theme = root.dataset.theme === "dark" ? "light" : "dark";
+    });
+    var hero = document.getElementById("heroMark");
+    var gtoggle = document.getElementById("guidesToggle");
+    gtoggle.addEventListener("click", function () {
+      var show = hero.classList.toggle("show");
+      gtoggle.setAttribute("aria-pressed", String(show));
+      gtoggle.textContent = show ? "구조 숨기기" : "구조 보기";
+    });
+    document.getElementById("swatches").addEventListener("click", function (e) {
+      var sw = e.target.closest(".swatch");
+      if (!sw) return;
+      var done = function () {
+        sw.classList.add("copied");
+        setTimeout(function () { sw.classList.remove("copied"); }, 1200);
+      };
+      try {
+        navigator.clipboard.writeText(sw.dataset.hex).then(done, done);
+      } catch (err) { done(); }
+    });
+  })();
+</script>
