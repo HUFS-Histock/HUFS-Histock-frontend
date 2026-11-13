@@ -716,7 +716,11 @@ export default function App() {
                   </span>
                   <span>
                     가격·거래량: {last ? "로컬 저장본" : "미제공"} / 분석:{" "}
-                    {source === "live" ? "API" : "저장본"}
+                    {source === "snapshot"
+                      ? "저장본"
+                      : result || busy
+                        ? "API"
+                        : "미제공"}
                   </span>
                 </footer>
               </div>

@@ -414,7 +414,7 @@ export function Chart({
       )}
       <svg viewBox={`0 0 ${width} 26`} role="img" aria-label={`${title} 날짜 축`}>
         <defs><clipPath id={`${clipId}-dates`}><rect width={width - 72} height="26" /></clipPath></defs>
-        <g clipPath={`url(#${clipId}-dates)`}>
+        <g clipPath={zoomed ? `url(#${clipId}-dates)` : undefined}>
         {ticks.map(tick => <text data-testid="date-tick" key={tick.index} x={x(tick.index)} y="16" textAnchor="middle">{tick.text}</text>)}
         </g>
         {index !== null && <g data-testid="crosshair-date" pointerEvents="none">
