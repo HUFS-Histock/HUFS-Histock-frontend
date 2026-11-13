@@ -183,6 +183,7 @@ export function WorkspacePanel({ analysis, chart }: Props) {
               displayDate={chart.displayDate}
               hasPrice={!!chart.last}
               source={analysis.source}
+              hasAnalysis={!!analysis.result || analysis.busy}
             />
           </div>
         )}

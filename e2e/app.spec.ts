@@ -18,6 +18,22 @@ async function hoverPlot(page: Page, svg: Locator, horizontal: number, vertical:
   }, { horizontal, vertical });
   await page.mouse.move(point.x, point.y);
 }
+// A clipped label stays in the DOM, so compare each date label with the axis clip (or the SVG when unclipped).
+async function cutDateTicks(scope: Locator) {
+  return scope.getByRole("img", { name: /날짜 축$/ }).evaluateAll((axes) =>
+    axes.flatMap((axis) => {
+      const svg = axis as SVGSVGElement;
+      const clip = svg.querySelector("g[clip-path]") ? svg.querySelector("clipPath rect") : null;
+      const right = clip ? Number(clip.getAttribute("width")) : svg.viewBox.baseVal.width;
+      return [...svg.querySelectorAll<SVGTextElement>('[data-testid="date-tick"]')]
+        .filter((tick) => {
+          const box = tick.getBBox();
+          return box.x < 0 || box.x + box.width > right;
+        })
+        .map((tick) => tick.textContent);
+    }),
+  );
+}
 
 test('crosshair labels replace the dot, track cursor height and stay inside single/split/mobile charts', async ({ page, request }) => {
   const snapshot: Snapshot = await (await request.get('/snapshot.json')).json();
@@ -130,6 +146,7 @@ test("live API → indicators → every Top 5 hover/split → modes and keyboard
     await button.press("Enter");
     await expect(page.getByTestId("chart")).toHaveCount(2);
     await expect(page.getByTestId("volume-bar")).toHaveCount(40);
+    expect(await cutDateTicks(page.locator(".split"))).toEqual([]);
     await expect(page.locator(".sidebar")).toBeVisible();
     const sidebarAfter = await page.locator(".sidebar").boundingBox();
     const panelAfter = await page.locator(".panel").boundingBox();
@@ -212,12 +229,15 @@ test("controlled loading, 429 error and retry; empty cases; malformed API reject
   await expect(page.getByRole("status")).toContainText("찾고 있어요");
   await expect(page.getByRole("alert")).toContainText("요청이 많습니다");
   await expect(page.getByTestId("volatility")).toHaveCount(0);
+  await expect(page.locator("footer")).toContainText("분석: 미제공");
   mode = "empty";
   await page.getByRole("button", { name: "다시 시도", exact: true }).click();
   await expect(page.getByText(/비교할 과거 사례가 없습니다/)).toBeVisible();
+  await expect(page.locator("footer")).toContainText("분석: API");
   mode = "malformed";
   await page.getByRole("button", { name: "분석하기", exact: true }).click();
   await expect(page.getByRole("alert")).toContainText("응답 형식이 올바르지");
+  await expect(page.locator("footer")).toContainText("분석: 미제공");
 });
 test("offline backend can use explicit snapshot; mobile has no page overflow", async ({
   page,
@@ -237,10 +257,12 @@ test("offline backend can use explicit snapshot; mobile has no page overflow", a
   await expect(
     page.getByRole("button", { name: "분석하기", exact: true }),
   ).toBeDisabled();
+  await expect(page.locator("footer")).toContainText("분석: 미제공");
   await page.getByRole("button", { name: "저장된 예시 보기" }).click();
   await expect(
     page.getByText("저장된 예시 분석", { exact: true }),
   ).toBeVisible();
+  await expect(page.locator("footer")).toContainText("분석: 저장본");
   await expect(page.getByTestId("volatility")).toBeVisible();
   await page.screenshot({ path: "test-results/mobile.png", fullPage: true });
   expect(
@@ -251,6 +273,7 @@ test("offline backend can use explicit snapshot; mobile has no page overflow", a
   await page.getByRole("button", { name: "차트로 비교하기 →" }).click();
   await page.locator(".case-strip button").first().click();
   await expect(page.getByTestId("chart")).toHaveCount(2);
+  expect(await cutDateTicks(page.locator(".split"))).toEqual([]);
   expect(
     await page.evaluate(
       () => document.documentElement.scrollWidth <= window.innerWidth,
@@ -354,6 +377,7 @@ test('horizontal pan keeps candle and volume dates aligned and date ticks adapt 
   const monthTicks = [...new Set(snapshot.prices.slice(-120).map(p => p.date.slice(5, 7)))]
     .map(m => `${Number(m)}월`);
   expect(await chart.getByTestId('date-tick').allTextContents()).toEqual(monthTicks);
+  expect(await cutDateTicks(chart)).toEqual([]);
   for (let i = 0; i < 5; i++) await chart.getByRole('button', { name: '차트 확대', exact: true }).click();
   await expect(chart).toHaveAttribute('data-count', '40');
   const weeks = await chart.getByTestId('date-tick').allTextContents();
