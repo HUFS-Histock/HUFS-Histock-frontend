@@ -1,16 +1,6 @@
-import type { Candle } from "./api.ts";
+import type { Candle } from "../../lib/api.ts";
 
-export const percent = (v: number | null, signed = false): string =>
-  v === null
-    ? "—"
-    : `${v < 0 ? "−" : signed && v > 0 ? "+" : ""}${Math.abs(v * 100).toFixed(1)}%`;
-export const tone = (v: number | null): string =>
-  v == null || v === 0 ? "" : v > 0 ? "up" : "down";
-export const price = (v: number): string =>
-  v.toLocaleString("en-US", {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  });
+/** 차트 뷰 계산 유틸: 캔들 창 선택, 좌표 계산, 줌 범위, 정규화, 축 눈금, 이동평균. */
 export function windowFor(
   prices: Candle[],
   endDate: string,

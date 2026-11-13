@@ -1,9 +1,10 @@
 import { useEffect, useId, useRef, useState } from "react";
 import type { PointerEvent } from "react";
-import type { Candle } from "../api";
-import { dateTicks, geometry, movingAverage, normalized, price, tone, zoomRange } from "../chart";
-
-type Viewport = { key: string; start: number; count: number; animate?: boolean };
+import type { Candle } from "../../lib/api";
+import { price } from "../../lib/format";
+import { dateTicks, geometry, movingAverage, normalized } from "./chartMath";
+import { useChartViewport } from "./useChartViewport";
+import { QuoteReadout } from "./QuoteReadout";
 
 type Props = {
   candles: Candle[] | null;
@@ -32,11 +33,7 @@ export function Chart({
   resetKey = 0,
 }: Props) {
   const clipId = useId();
-  const chartRef = useRef<HTMLDivElement>(null);
   const drag = useRef<{ id: number; x: number; start: number; key: string } | null>(null);
-  const [viewport, setViewport] = useState<Viewport | null>(null);
-  const [animated, setAnimated] = useState<Viewport | null>(null);
-  const displayed = useRef<Viewport | null>(null);
   const [cursor, setCursor] = useState<{ index: number; y: number | null } | null>(null);
   const [mobile, setMobile] = useState(
     () => window.matchMedia("(max-width: 760px)").matches,
@@ -53,86 +50,19 @@ export function Chart({
   const fullRaw = sourceCandles?.map((p) => p.close) ?? path?.map((v) => 100 * (1 + v));
   const total = fullRaw?.length ?? 0;
   const dataKey = `${resetKey}:${sourceCandles?.map(p => p.date).join(',') ?? path?.join(',')}:${comparison?.date ?? ''}`;
-  const target = viewport?.key === dataKey ? viewport : { key: dataKey, start: 0, count: total, animate: true };
-  const view = target.animate && animated?.key === dataKey ? animated : target;
-  useEffect(() => {
-    displayed.current = view;
+  const { chartRef, view, zoom, pan, reset } = useChartViewport({
+    total,
+    dataKey,
+    width,
+    height,
+    onNavigate: () => setCursor(null),
   });
-  useEffect(() => {
-    const from = displayed.current;
-    const to = { key: dataKey, start: target.start, count: target.count };
-    if (!target.animate || !from || from.key !== dataKey || from.count === to.count ||
-      window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-      setAnimated(to);
-      return;
-    }
-    let frame = 0;
-    const began = performance.now();
-    function step(now: number) {
-      const progress = Math.max(0, Math.min(1, (now - began) / 180));
-      const eased = 1 - Math.pow(1 - progress, 3);
-      setAnimated(progress === 1 ? to : {
-        key: dataKey,
-        start: from!.start + (to.start - from!.start) * eased,
-        count: from!.count + (to.count - from!.count) * eased,
-      });
-      if (progress < 1) frame = requestAnimationFrame(step);
-    }
-    frame = requestAnimationFrame(step);
-    return () => cancelAnimationFrame(frame);
-  }, [dataKey, target.start, target.count, target.animate]);
   const { count } = view;
   const position = view.start;
   const start = Math.floor(position);
   const fraction = position - start;
   const end = Math.min(total, Math.ceil(position + count));
   const zoomed = count < total;
-  function zoom(factor: number, anchor = .5) {
-    if (!total) return;
-    setCursor(null);
-    setViewport(previous => {
-      const current = previous?.key === dataKey ? previous : { start: 0, count: total };
-      return { key: dataKey, animate: true, ...zoomRange(total, current.start, current.count, factor, anchor) };
-    });
-  }
-  function pan(value: number, relative = false) {
-    setCursor(null);
-    setViewport(previous => {
-      const current = previous?.key === dataKey && !previous.animate
-        ? previous : displayed.current?.key === dataKey ? displayed.current : view;
-      return { key: dataKey, count: current.count, animate: false,
-        start: Math.max(0, Math.min(total - current.count, relative ? current.start + value : value)) };
-    });
-  }
-  useEffect(() => {
-    const chart = chartRef.current;
-    if (!chart) return;
-    let wheelDelta = 0;
-    function wheel(event: WheelEvent) {
-      const svg = event.target instanceof Element ? event.target.closest<SVGSVGElement>('svg[data-zoom-plot]') : null;
-      const matrix = svg?.getScreenCTM();
-      if (!svg || !matrix || (!event.deltaY && !event.deltaX)) return;
-      const point = new DOMPoint(event.clientX, event.clientY).matrixTransform(matrix.inverse());
-      const isPrice = svg.dataset.zoomPlot === 'price';
-      if (point.x < 22 || point.x > width - 72 || point.y < (isPrice ? 24 : 1) || point.y > (isPrice ? height - 30 : 97)) return;
-      event.preventDefault();
-      const unit = event.deltaMode === 1 ? 16 : event.deltaMode === 2 ? height : 1;
-      if (!event.ctrlKey && (event.shiftKey || Math.abs(event.deltaX) > Math.abs(event.deltaY))) {
-        const delta = (event.deltaX || event.deltaY) * unit;
-        wheelDelta = 0;
-        pan(delta / matrix.a / ((width - 94) / (displayed.current?.count ?? total)), true);
-        return;
-      }
-      const pixels = event.deltaY * unit;
-      if (Math.sign(pixels) !== Math.sign(wheelDelta)) wheelDelta = 0;
-      wheelDelta += pixels;
-      if (Math.abs(wheelDelta) < 24) return;
-      zoom(Math.exp(Math.max(-160, Math.min(160, wheelDelta)) * .003), (point.x - 22) / (width - 94));
-      wheelDelta = 0;
-    }
-    chart.addEventListener('wheel', wheel, { passive: false });
-    return () => chart.removeEventListener('wheel', wheel);
-  }, [dataKey, total, width, height]);
   const comparisonRaw =
     comparison?.candles?.map((p) => p.close) ??
     comparison?.path?.map((v) => 100 * (1 + v));
@@ -240,14 +170,7 @@ export function Chart({
         event.preventDefault();
         pan(event.key === 'Home' ? 0 : event.key === 'End' ? total - count : position + (event.key === 'ArrowLeft' ? -1 : 1));
       }}>
-      {quote ? <div className="quote-readout" data-testid="quote-readout" data-date={quote.date} aria-label={`${title} ${quote.date} 시세`} title={`${quote.date} · 보정가격 USD · 등락은 전 거래일 종가 대비`} aria-live="off">
-        {([['시', '시가', quote.open], ['고', '고가', quote.high], ['저', '저가', quote.low], ['종', '종가', quote.close]] as const).map(([short, label, value]) =>
-          <span className="quote-item" key={short} aria-label={label}><span>{short}</span><b>{price(value)}</b></span>)}
-        <span className={`quote-change ${tone(change)}`} data-testid="quote-change" aria-label="전 거래일 대비 등락">
-          {change === null || changeRate === null ? '전일 대비 —' : `${change > 0 ? '▲' : change < 0 ? '▼' : '−'} ${price(Math.abs(change))} (${changeRate > 0 ? '+' : changeRate < 0 ? '−' : ''}${Math.abs(changeRate).toFixed(2)}%)`}
-        </span>
-        <span className="quote-item" aria-label="거래량"><span>거</span><b>{quote.volume.toLocaleString('en-US')}</b></span>
-      </div> : <div className="chart-readout" aria-live="off">
+      {quote ? <QuoteReadout title={title} quote={quote} change={change} changeRate={changeRate} /> : <div className="chart-readout" aria-live="off">
         {index === null ? (
           <span>
             시작 종가 = 100 · 상대 거래일 정렬
@@ -426,7 +349,7 @@ export function Chart({
         <span>휠 확대·축소 · 드래그/가로 스크롤 이동 · {Math.round(count)}/{total}거래일 표시</span>
         <button type="button" aria-label="차트 확대" disabled={count <= Math.min(5, total)} onClick={() => zoom(.8)}>＋</button>
         <button type="button" aria-label="차트 축소" disabled={!zoomed} onClick={() => zoom(1.25)}>−</button>
-        <button type="button" aria-label="차트 배율 초기화" disabled={!zoomed} onClick={() => { setViewport(null); setCursor(null); }}>원래 구간</button>
+        <button type="button" aria-label="차트 배율 초기화" disabled={!zoomed} onClick={() => reset()}>원래 구간</button>
       </div>
     </div>
   );

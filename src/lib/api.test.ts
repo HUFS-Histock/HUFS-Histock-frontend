@@ -7,15 +7,15 @@ import {
   parseSnapshot,
   request,
 } from "./api.ts";
+import { percent } from "./format.ts";
 import {
   dateTicks,
   geometry,
   movingAverage,
   normalized,
-  percent,
   windowFor,
   zoomRange,
-} from "./chart.ts";
+} from "../features/chart/chartMath.ts";
 
 test("date ticks switch at 40/15 days and use the first session of each calendar week", () => {
   const dates: string[] = [];
