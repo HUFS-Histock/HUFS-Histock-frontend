@@ -1,5 +1,6 @@
 import { test, expect } from "@playwright/test";
 import type { Locator, Page } from "@playwright/test";
+import type { Snapshot } from "../src/lib/api";
 
 async function openAnalysis(page: Page) {
   await page
@@ -35,7 +36,7 @@ async function cutDateTicks(scope: Locator) {
 }
 
 test('crosshair labels replace the dot, track cursor height and stay inside single/split/mobile charts', async ({ page, request }) => {
-  const snapshot = await (await request.get('/snapshot.json')).json();
+  const snapshot: Snapshot = await (await request.get('/snapshot.json')).json();
   const firstDate = snapshot.prices.slice(-120)[0].date;
   await page.goto('/');
   await expect(page.getByTestId('candle')).toHaveCount(120);
@@ -51,7 +52,7 @@ test('crosshair labels replace the dot, track cursor height and stay inside sing
     return `${delta > 0 ? '▲' : delta < 0 ? '▼' : '−'} ${formatPrice(Math.abs(delta))} (${delta > 0 ? '+' : delta < 0 ? '−' : ''}${Math.abs(delta / previous * 100).toFixed(2)}%)`;
   };
   await expect(readout).toHaveAttribute('data-date', firstDate);
-  for (const [label, field] of [['시가', 'open'], ['고가', 'high'], ['저가', 'low'], ['종가', 'close']]) {
+  for (const [label, field] of [['시가', 'open'], ['고가', 'high'], ['저가', 'low'], ['종가', 'close']] as const) {
     await expect(readout.locator(`[aria-label="${label}"] b`)).toHaveText(formatPrice(firstQuote[field]));
   }
   await expect(readout.locator('[aria-label="거래량"] b')).toHaveText(firstQuote.volume.toLocaleString('en-US'));
@@ -73,7 +74,7 @@ test('crosshair labels replace the dot, track cursor height and stay inside sing
   await expect(page.getByTestId('crosshair-date')).toHaveText(snapshot.dataDate);
   await expect(readout).toHaveAttribute('data-date', snapshot.dataDate);
   await expect(page.getByTestId('quote-change')).toHaveClass(/down/);
-  await expect(page.getByTestId('quote-change')).toHaveText(formatChange(snapshot.prices.at(-1).close, snapshot.prices.at(-2).close));
+  await expect(page.getByTestId('quote-change')).toHaveText(formatChange(snapshot.prices.at(-1)!.close, snapshot.prices.at(-2)!.close));
   await page.screenshot({ path: 'test-results/crosshair.png', fullPage: true });
   await page.getByRole('link', { name: 'HISTOCK', exact: true }).hover();
   await expect(page.getByTestId('crosshair-date')).toHaveCount(0);
@@ -368,11 +369,14 @@ test('chart-local zoom follows the pointer, aligns volume and preserves analysis
 });
 
 test('horizontal pan keeps candle and volume dates aligned and date ticks adapt to zoom', async ({ page, request }) => {
-  const snapshot = await (await request.get('/snapshot.json')).json();
+  const snapshot: Snapshot = await (await request.get('/snapshot.json')).json();
   await page.goto('/');
   const chart = page.getByTestId('chart').first();
   await expect(chart).toHaveAttribute('data-count', '120');
-  expect(await chart.getByTestId('date-tick').allTextContents()).toEqual(['5월', '6월', '7월', '8월', '9월', '10월', '11월']);
+  // 월별 눈금은 표시 구간(마지막 120거래일)에 등장하는 달 그대로 — 데이터 갱신과 무관하게 계산한다.
+  const monthTicks = [...new Set(snapshot.prices.slice(-120).map(p => p.date.slice(5, 7)))]
+    .map(m => `${Number(m)}월`);
+  expect(await chart.getByTestId('date-tick').allTextContents()).toEqual(monthTicks);
   expect(await cutDateTicks(chart)).toEqual([]);
   for (let i = 0; i < 5; i++) await chart.getByRole('button', { name: '차트 확대', exact: true }).click();
   await expect(chart).toHaveAttribute('data-count', '40');
@@ -437,7 +441,8 @@ test('horizontal pan keeps candle and volume dates aligned and date ticks adapt 
   await navigation.focus();
   await navigation.press('End');
   await expect(chart).toHaveAttribute('data-start', '106');
-  expect(await chart.getByTestId('date-tick').last().textContent()).toBe('11/2');
+  const [lastMonth, lastDay] = snapshot.dataDate.slice(5).split('-').map(Number);
+  expect(await chart.getByTestId('date-tick').last().textContent()).toBe(`${lastMonth}/${lastDay}`);
   await page.screenshot({ path: 'test-results/daily-axis.png', fullPage: true });
   await page.setViewportSize({ width: 390, height: 844 });
   await expect(chart.getByTestId('date-tick')).toHaveCount(14);

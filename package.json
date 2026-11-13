@@ -10,7 +10,7 @@
     "dev": "vite --host 127.0.0.1 --port 5173 --strictPort",
     "build": "tsc --noEmit && vite build",
     "preview": "vite preview --host 127.0.0.1",
-    "test": "node --experimental-strip-types --test src/*.test.ts",
+    "test": "node --experimental-strip-types --test \"src/**/*.test.ts\"",
     "test:e2e": "playwright test",
     "lint": "oxlint src e2e",
     "snapshot": "../HUFS-Histock-AI/.venv/bin/python scripts/prepare_snapshot.py"
